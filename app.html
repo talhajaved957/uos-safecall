@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#E53935">
+<meta name="description" content="UoS SafeCall - campus emergency help for University of Sargodha students.">
+<title>UoS SafeCall</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--red:#E53935;--red2:#B3161B;--ink:#151826;--sub:#6B7280;--mute:#9CA3AF;--line:#E7E9F0;--bg:#F5F6FA;--green:#16A34A;--blue:#2563EB;--amber:#D97706;--purple:#7C3AED;
+  --soft:0 6px 18px rgba(21,24,38,.10);--safe-b:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#1b1d27;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+a{color:inherit;text-decoration:none}
+#app{position:relative;max-width:440px;height:100%;margin:0 auto;background:var(--bg);overflow:hidden}
+.screen{position:absolute;inset:0;overflow-y:auto;display:none;padding-bottom:calc(84px + var(--safe-b))}
+.screen.on{display:block;animation:fade .28s ease-out}
+.screen.nonav{padding-bottom:24px}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.bubble{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none}
+.bubble .ic{width:20px;height:20px}
+.card{background:#fff;border-radius:18px;box-shadow:var(--soft)}
+.row{display:flex;align-items:center;gap:12px}
+.t14{font-size:14px;font-weight:700}.s11{font-size:11.5px;color:var(--sub);font-weight:500}
+.pad{padding:0 20px}
+.sec{font-size:10.5px;font-weight:800;color:var(--mute);letter-spacing:.1em;margin:18px 20px 8px}
+/* splash */
+#splash{background:linear-gradient(180deg,#F0443A,#B3161B);color:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0}
+#splash.on{display:flex}
+.logo{width:120px;height:120px;border-radius:36px;background:#fff;display:grid;place-items:center;box-shadow:0 18px 40px rgba(107,15,18,.25)}
+#splash h1{font-size:34px;font-weight:800;margin:28px 0 6px}
+#splash p{margin:0;font-weight:500;opacity:.85}
+.dots{display:flex;gap:9px;margin-top:60px}.dots i{width:10px;height:10px;border-radius:50%;background:#fff;animation:blink 1s infinite}
+.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+@keyframes blink{50%{opacity:.3}}
+.splash-foot{position:absolute;bottom:calc(28px + var(--safe-b));font-size:13px;font-weight:600;opacity:.9}
+.splash-foot small{display:block;font-size:10px;letter-spacing:.12em;opacity:.7;margin-top:4px}
+/* home */
+.hero{background:linear-gradient(180deg,#F0443A,#B3161B);color:#fff;border-radius:0 0 32px 32px;padding:calc(18px + env(safe-area-inset-top,0px)) 20px 64px;position:relative}
+.hero small{opacity:.8;font-weight:500;font-size:14px}.hero h2{margin:2px 0 0;font-size:22px;font-weight:800}
+.iconbtn{width:40px;height:40px;border-radius:14px;display:grid;place-items:center}
+.loc{margin:-48px 20px 0;padding:13px 12px;position:relative}
+.live{font-size:9.5px;font-weight:800;color:var(--green);background:#DCFCE7;border-radius:10px;padding:4px 8px;display:flex;align-items:center;gap:4px;margin-left:auto}
+.live i{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.live.off{color:var(--sub);background:#EEF0F4}.live.off i{background:var(--mute)}
+.ask{text-align:center;margin:20px 40px 0}.ask h3{margin:0;font-size:18px;font-weight:800}.ask p{margin:6px 0 0;font-size:12px;color:var(--sub);line-height:17px}
+.sos-wrap{display:grid;place-items:center;margin:14px auto 4px;width:200px;height:200px;border-radius:50%;background:rgba(229,57,53,.07)}
+.sos-ring{width:160px;height:160px;border-radius:50%;background:rgba(229,57,53,.14);display:grid;place-items:center;animation:pulse 2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 14px rgba(229,57,53,.06)}}
+#sosBtn{width:120px;height:120px;border-radius:50%;background:linear-gradient(180deg,#F0443A,#B3161B);color:#fff;box-shadow:0 12px 28px rgba(229,57,53,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:manipulation}
+#sosBtn b{font-size:34px;font-weight:800;line-height:1}#sosBtn span{font-size:11px;font-weight:600;opacity:.9;margin-top:6px}
+#sosBtn:active{transform:scale(.96)}
+.head{display:flex;align-items:center;justify-content:space-between;margin:6px 20px 10px}
+.head b{font-size:15px;font-weight:800}.head a,.head button{font-size:12px;font-weight:700;color:var(--red)}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 20px}
+.tile{padding:12px 0 10px;text-align:center;border-radius:18px}
+.tile .bubble{margin:0 auto 6px;width:36px;height:36px}.tile b{display:block;font-size:12px}.tile small{font-size:10.5px;color:var(--sub);font-weight:600}
+.banner{margin:14px 20px 0;background:#EEF2FF;border-radius:16px;padding:9px 10px;width:calc(100% - 40px);text-align:left}
+/* nav */
+nav{position:absolute;left:0;right:0;bottom:0;height:calc(72px + var(--safe-b));padding-bottom:var(--safe-b);background:#fff;box-shadow:0 -4px 16px rgba(21,24,38,.07);display:grid;grid-template-columns:repeat(4,1fr);z-index:5}
+nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:500;color:var(--mute);position:relative}
+nav button.on{color:var(--red);font-weight:700}
+nav button.on::before{content:"";position:absolute;top:8px;width:40px;height:32px;border-radius:12px;background:#FDECEC;z-index:-1}
+nav.hide{display:none}
+/* lists */
+.top{display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top,0px)) 20px 10px}
+.top h2{margin:0;font-size:19px;font-weight:800;flex:1}
+.back{width:36px;height:36px;border-radius:12px;background:#fff;box-shadow:var(--soft);display:grid;place-items:center}
+.add{width:36px;height:36px;border-radius:12px;background:var(--red);color:#fff;display:grid;place-items:center}
+.search{margin:4px 20px 0;display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:0 14px;height:46px;color:var(--mute)}
+.search input{border:0;outline:0;flex:1;font-size:13px;font-weight:500;background:none;color:var(--ink)}
+.chips{display:flex;gap:8px;margin:14px 20px 0;overflow-x:auto}
+.chip{height:32px;padding:0 16px;border-radius:16px;background:#fff;border:1px solid var(--line);font-size:12px;font-weight:700;color:var(--sub);white-space:nowrap}
+.chip.on{background:var(--red);border-color:var(--red);color:#fff}
+.item{margin:0 20px 8px;padding:11px 12px;border-radius:16px;background:#fff;box-shadow:0 3px 10px rgba(21,24,38,.06)}
+.item .txt{flex:1;min-width:0}.item .txt div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.call{width:38px;height:38px;border-radius:50%;background:#DCFCE7;color:var(--green);display:grid;place-items:center;flex:none}
+.call .ic{width:18px;height:18px}
+.call.need{background:#FEF3C7;color:var(--amber);width:auto;border-radius:19px;padding:0 12px;font-size:11px;font-weight:800}
+.more{width:30px;height:38px;color:var(--mute);display:grid;place-items:center;flex:none}
+.empty{margin:4px 20px;padding:16px;border:2px dashed var(--line);border-radius:16px;text-align:center;font-size:12.5px;color:var(--sub)}
+/* map */
+#mapFrame{width:100%;height:100%;border:0;display:block}
+.mapbox{position:relative;height:48vh;min-height:300px;background:#E9F0E2}
+.mapbar{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:16px;right:16px;padding:9px 10px;z-index:2}
+.sheet{background:#fff;border-radius:28px 28px 0 0;margin-top:-28px;position:relative;padding:12px 20px 10px;box-shadow:0 -6px 24px rgba(21,24,38,.12);min-height:52vh}
+.handle{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
+.btn{height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;font-weight:800;width:100%}
+.btn.red{background:linear-gradient(180deg,#F0443A,#B3161B);color:#fff;box-shadow:0 6px 14px rgba(229,57,53,.25)}
+.btn.dark{background:var(--ink);color:#fff}
+.btn.line{background:#fff;border:1.5px solid var(--line)}
+.btn.green{background:var(--green);color:#fff}
+.btn .ic{width:18px;height:18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.nearby{padding:10px 0;border-bottom:1px solid var(--line)}
+/* alert */
+#alert{background:linear-gradient(180deg,#E8FBF0,#fff 45%)}
+#alert.counting{background:linear-gradient(180deg,#FDECEC,#fff 45%)}
+.okc{width:150px;height:150px;border-radius:50%;background:rgba(22,163,74,.08);display:grid;place-items:center;margin:calc(40px + env(safe-area-inset-top,0px)) auto 0}
+.okc div{width:116px;height:116px;border-radius:50%;background:rgba(22,163,74,.14);display:grid;place-items:center}
+.okc span{width:80px;height:80px;border-radius:50%;background:var(--green);display:grid;place-items:center;color:#fff;box-shadow:0 12px 26px rgba(22,163,74,.35);font-size:30px;font-weight:800}
+#alert.counting .okc{background:rgba(229,57,53,.08)}#alert.counting .okc div{background:rgba(229,57,53,.14)}
+#alert.counting .okc span{background:var(--red);box-shadow:0 12px 26px rgba(229,57,53,.35)}
+.al-t{text-align:center;font-size:26px;font-weight:800;margin:22px 0 0}
+.al-p{text-align:center;font-size:13px;color:var(--sub);margin:8px 40px 0;line-height:19px}
+.status{margin:20px 20px 0;padding:4px 16px}
+.status .row{padding:12px 0;border-bottom:1px solid var(--line)}.status .row:last-child{border:0}
+.tick{color:var(--green)}.wait{color:var(--mute)}
+.autocall{margin:14px 20px 0;background:#FEF2F2;border-radius:16px;padding:12px 16px}
+.autocall b.cd{margin-left:auto;font-size:22px;font-weight:800;color:var(--red)}
+.stack{display:grid;gap:10px;margin:14px 20px 0}
+.link{display:block;text-align:center;font-size:13px;font-weight:700;color:var(--sub);margin:14px 0}
+/* forms */
+.field{margin:0 20px 12px}.field label{display:block;font-size:12px;font-weight:700;color:var(--sub);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;height:46px;border:1px solid var(--line);border-radius:14px;padding:0 14px;background:#fff;font-size:14px;outline:0}
+.field textarea{height:80px;padding:12px 14px;resize:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--red)}
+.switch{display:flex;align-items:center;justify-content:space-between;margin:0 20px 12px;padding:14px;background:#fff;border-radius:14px;border:1px solid var(--line);font-size:13px;font-weight:600}
+.switch input{width:20px;height:20px;accent-color:var(--red)}
+.note{margin:16px 20px;padding:12px 14px;border-radius:14px;background:#FFF7ED;color:#9A3412;font-size:12px;line-height:18px}
+/* modal + toast */
+.modal{position:absolute;inset:0;background:rgba(21,24,38,.45);display:none;align-items:flex-end;z-index:20}
+.modal.on{display:flex}
+.modal .box{background:var(--bg);width:100%;border-radius:24px 24px 0 0;padding:16px 0 calc(16px + var(--safe-b));animation:up .25s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.modal h3{margin:4px 20px 14px;font-size:18px;font-weight:800}
+.toast{position:absolute;left:50%;bottom:calc(96px + var(--safe-b));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:13px;font-weight:600;z-index:30;opacity:0;pointer-events:none;transition:.25s;max-width:90%;text-align:center}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div id="app">
+
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v12h14V9"/><path d="M9 21v-6h6v6"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+  <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></symbol>
+  <symbol id="i-siren" viewBox="0 0 24 24"><path d="M7 18v-6a5 5 0 1 1 10 0v6"/><path d="M5 21a1 1 0 0 1-1-1v-1a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1a1 1 0 0 1-1 1z"/><path d="M21 12h1"/><path d="M18.5 4.5 18 5"/><path d="M2 12h1"/><path d="M12 2v1"/><path d="m4.93 4.93.71.71"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M3 11 22 2l-9 19-2-8-8-2z"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></symbol>
+  <symbol id="i-msg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></symbol>
+  <symbol id="i-map" viewBox="0 0 24 24"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/></symbol>
+</svg>
+
+<!-- 1. SPLASH -->
+<section id="splash" class="screen on nonav">
+  <div class="logo"><svg width="72" height="72" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="#E53935"/><path d="M12 7.5v8M8 11.5h8" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg></div>
+  <h1>UoS SafeCall</h1>
+  <p>Help is one tap away</p>
+  <div class="dots"><i></i><i></i><i></i></div>
+  <div class="splash-foot">University of Sargodha<small>CAMPUS EMERGENCY NETWORK</small></div>
+</section>
+
+<!-- 2. HOME -->
+<section id="home" class="screen">
+  <div class="hero">
+    <div class="row" style="justify-content:space-between">
+      <div><small id="greet">Hello,</small><h2 id="hello">Hello, Student</h2></div>
+      <button class="iconbtn" style="background:rgba(255,255,255,.15);color:#fff" onclick="go('profile')" aria-label="Profile"><svg class="ic"><use href="#i-user"/></svg></button>
+    </div>
+  </div>
+  <button class="card loc row" style="width:calc(100% - 40px);text-align:left" onclick="go('map')">
+    <span class="bubble" style="background:#FEE2E2;color:var(--red)"><svg class="ic"><use href="#i-pin"/></svg></span>
+    <span style="min-width:0"><span class="s11" id="locLabel">Your location</span><br><span class="t14" id="locName">Finding you...</span></span>
+    <span class="live off" id="liveChip"><i></i><span id="liveTxt">GPS</span></span>
+  </button>
+  <div class="ask"><h3>Are you in an emergency?</h3><p>Press SOS. Your live location goes to your contacts and Rescue 1122 is called.</p></div>
+  <div class="sos-wrap"><div class="sos-ring"><button id="sosBtn" onclick="startSOS()" aria-label="Send SOS"><b>SOS</b><span>Tap for help</span></button></div></div>
+  <div class="head"><b>Quick call</b><button onclick="go('contacts')">See all</button></div>
+  <div class="tiles">
+    <a class="tile card" href="tel:1122"><span class="bubble" style="background:#FEE2E2;color:var(--red)"><svg class="ic"><use href="#i-pulse"/></svg></span><b>Rescue</b><small>1122</small></a>
+    <a class="tile card" href="tel:15"><span class="bubble" style="background:#DBEAFE;color:var(--blue)"><svg class="ic"><use href="#i-siren"/></svg></span><b>Police</b><small>15</small></a>
+    <a class="tile card" href="tel:16"><span class="bubble" style="background:#FEF3C7;color:var(--amber)"><svg class="ic"><use href="#i-flame"/></svg></span><b>Fire</b><small>16</small></a>
+    <a class="tile card" href="tel:115"><span class="bubble" style="background:#DCFCE7;color:var(--green)"><svg class="ic"><use href="#i-plus"/></svg></span><b>Ambulance</b><small>115</small></a>
+  </div>
+  <button class="banner row" onclick="shareLocation()">
+    <span class="bubble" style="background:#fff;color:var(--blue);width:36px;height:36px"><svg class="ic"><use href="#i-send"/></svg></span>
+    <span style="flex:1"><b style="font-size:13px">Safe Walk</b><br><span class="s11">Send your live location to a friend</span></span>
+    <svg class="ic" style="color:var(--blue)"><use href="#i-chev"/></svg>
+  </button>
+</section>
+
+<!-- 3. CONTACTS -->
+<section id="contacts" class="screen">
+  <div class="top">
+    <button class="back" onclick="go('home')" aria-label="Back"><svg class="ic"><use href="#i-back"/></svg></button>
+    <h2>Emergency Contacts</h2>
+    <button class="add" onclick="openContact()" aria-label="Add contact"><svg class="ic"><use href="#i-plus"/></svg></button>
+  </div>
+  <label class="search"><svg class="ic"><use href="#i-search"/></svg><input id="q" placeholder="Search contacts or services" oninput="renderContacts()"></label>
+  <div class="chips" id="chips"></div>
+  <div id="list"></div>
+</section>
+
+<!-- 4. MAP -->
+<section id="map" class="screen">
+  <div class="mapbox">
+    <iframe id="mapFrame" title="Map"></iframe>
+    <div class="card mapbar row">
+      <button class="back" style="box-shadow:none" onclick="go('home')" aria-label="Back"><svg class="ic"><use href="#i-back"/></svg></button>
+      <div style="flex:1;min-width:0"><div class="t14" id="mapTitle">University of Sargodha</div><div class="s11" id="mapSub">Waiting for GPS...</div></div>
+      <span class="live off" id="liveChip2"><i></i><span>LIVE</span></span>
+    </div>
+  </div>
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="sec" style="margin:0 0 6px">NEAREST HELP</div>
+    <a class="row nearby" id="hospLink" target="_blank" rel="noopener">
+      <span class="bubble" style="background:#DCFCE7;color:var(--green);width:44px;height:44px"><svg class="ic"><use href="#i-plus"/></svg></span>
+      <span style="flex:1"><b style="font-size:15px">Hospitals near me</b><br><span class="s11">Opens Google Maps with directions</span></span>
+      <svg class="ic" style="color:var(--mute)"><use href="#i-chev"/></svg>
+    </a>
+    <a class="row nearby" id="policeLink" target="_blank" rel="noopener">
+      <span class="bubble" style="background:#DBEAFE;color:var(--blue);width:44px;height:44px"><svg class="ic"><use href="#i-siren"/></svg></span>
+      <span style="flex:1"><b style="font-size:15px">Police stations near me</b><br><span class="s11">Opens Google Maps</span></span>
+      <svg class="ic" style="color:var(--mute)"><use href="#i-chev"/></svg>
+    </a>
+    <a class="row nearby" id="campusLink" target="_blank" rel="noopener" style="border:0">
+      <span class="bubble" style="background:#EDE9FE;color:var(--purple);width:44px;height:44px"><svg class="ic"><use href="#i-shield"/></svg></span>
+      <span style="flex:1"><b style="font-size:15px">Directions to campus</b><br><span class="s11" id="campusDist">University of Sargodha, Sargodha</span></span>
+      <svg class="ic" style="color:var(--mute)"><use href="#i-chev"/></svg>
+    </a>
+    <div class="grid2" style="margin-top:12px">
+      <button class="btn line" onclick="shareLocation()"><svg class="ic" style="color:var(--blue)"><use href="#i-send"/></svg>Share location</button>
+      <button class="btn red" onclick="startSOS()">Send SOS</button>
+    </div>
+  </div>
+</section>
+
+<!-- 5. ALERT -->
+<section id="alert" class="screen nonav">
+  <div class="okc"><div><span id="alIcon">5</span></div></div>
+  <div class="al-t" id="alTitle">Sending SOS...</div>
+  <div class="al-p" id="alText">Rescue 1122 will be called when the countdown ends. Tap Cancel if this was a mistake.</div>
+  <div class="card status">
+    <div class="row"><span class="bubble" style="background:#DCFCE7;color:var(--green);width:36px;height:36px"><svg class="ic"><use href="#i-pin"/></svg></span>
+      <div style="flex:1;min-width:0"><div class="t14">Location</div><div class="s11" id="stLoc">Getting GPS fix...</div></div><svg class="ic wait" id="tkLoc"><use href="#i-check"/></svg></div>
+    <div class="row"><span class="bubble" style="background:#DCFCE7;color:var(--green);width:36px;height:36px"><svg class="ic"><use href="#i-users"/></svg></span>
+      <div style="flex:1;min-width:0"><div class="t14" id="stCtT">Your contacts</div><div class="s11" id="stCt">Tap "Text my contacts" below</div></div><svg class="ic wait" id="tkCt"><use href="#i-check"/></svg></div>
+    <div class="row"><span class="bubble" style="background:#DCFCE7;color:var(--green);width:36px;height:36px"><svg class="ic"><use href="#i-phone"/></svg></span>
+      <div style="flex:1;min-width:0"><div class="t14">Rescue 1122</div><div class="s11" id="stCall">Calling when countdown ends</div></div><svg class="ic wait" id="tkCall"><use href="#i-check"/></svg></div>
+  </div>
+  <div class="autocall row" id="acBox"><svg class="ic" style="color:var(--red)"><use href="#i-phone"/></svg><div><b style="font-size:13px">Auto-calling Rescue 1122</b><div class="s11">unless you cancel</div></div><b class="cd" id="cd">0:05</b></div>
+  <div class="stack">
+    <a class="btn red" href="tel:1122" onclick="markCalled()"><svg class="ic"><use href="#i-phone"/></svg>Call 1122 now</a>
+    <div class="grid2">
+      <a class="btn green" id="smsBtn" onclick="markTexted()"><svg class="ic"><use href="#i-msg"/></svg>Text contacts</a>
+      <a class="btn line" id="waBtn" target="_blank" rel="noopener" onclick="markTexted()"><svg class="ic" style="color:var(--green)"><use href="#i-send"/></svg>WhatsApp</a>
+    </div>
+    <button class="btn dark" onclick="endSOS(true)">I'm safe now</button>
+  </div>
+  <button class="link" style="width:100%" id="cancelBtn" onclick="endSOS(false)">Cancel alert</button>
+</section>
+
+<!-- 6. PROFILE -->
+<section id="profile" class="screen">
+  <div class="top"><button class="back" onclick="go('home')" aria-label="Back"><svg class="ic"><use href="#i-back"/></svg></button><h2>My Profile</h2></div>
+  <div class="field"><label for="pName">Your name</label><input id="pName" placeholder="e.g. Urwa Maryam" autocomplete="name"></div>
+  <div class="field"><label for="pDept">Department / Roll no.</label><input id="pDept" placeholder="e.g. BS Computer Science"></div>
+  <div class="field"><label for="pBlood">Blood group</label><select id="pBlood"><option value="">Not set</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+  <div class="field"><label for="pMed">Medical notes (allergies, conditions)</label><textarea id="pMed" placeholder="e.g. Asthma, allergic to penicillin"></textarea></div>
+  <label class="switch">Add these details to my SOS message<input type="checkbox" id="pInc" checked></label>
+  <div style="margin:0 20px"><button class="btn red" onclick="saveProfile()">Save profile</button></div>
+  <div class="note"><b>Student project.</b> UoS SafeCall is a university UI/UX project. Everything you save stays only on this phone. In a real emergency, call <a href="tel:1122" style="font-weight:800;text-decoration:underline">1122</a> directly if the app does not work.</div>
+</section>
+
+<nav id="nav" class="hide">
+  <button data-go="home" onclick="go('home')"><svg class="ic"><use href="#i-home"/></svg>Home</button>
+  <button data-go="contacts" onclick="go('contacts')"><svg class="ic"><use href="#i-users"/></svg>Contacts</button>
+  <button data-go="map" onclick="go('map')"><svg class="ic"><use href="#i-pin"/></svg>Map</button>
+  <button data-go="profile" onclick="go('profile')"><svg class="ic"><use href="#i-user"/></svg>Profile</button>
+</nav>
+
+<!-- add / edit contact -->
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="box">
+    <h3 id="mTitle">Add contact</h3>
+    <div class="field"><label for="mName">Name</label><input id="mName" placeholder="e.g. Mother"></div>
+    <div class="field"><label for="mPhone">Phone number</label><input id="mPhone" type="tel" inputmode="tel" placeholder="e.g. 03001234567"></div>
+    <div class="field" id="mCatWrap"><label for="mCat">Type</label><select id="mCat"><option>Family</option><option>Friend</option><option>Campus</option></select></div>
+    <label class="switch" id="mSosWrap">Send my SOS message to this contact<input type="checkbox" id="mSos" checked></label>
+    <div class="grid2" style="margin:0 20px"><button class="btn line" id="mDel" onclick="deleteContact()">Delete</button><button class="btn red" onclick="saveContact()">Save</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+</div>
+
+<script>
+// ---------------- data ----------------
+var CAMPUS = { lat: 32.0728373, lon: 72.6841928, box: [32.0693522, 32.0781134, 72.6769698, 72.6904442] };
+var SERVICES = [
+  { id: 's1', name: 'Rescue 1122', sub: 'Medical & rescue - 24/7', phone: '1122', cat: 'Services', icon: 'pulse', tint: '#FEE2E2', col: '#E53935' },
+  { id: 's2', name: 'Police 15', sub: 'Punjab Police helpline', phone: '15', cat: 'Services', icon: 'siren', tint: '#DBEAFE', col: '#2563EB' },
+  { id: 's3', name: 'Fire Brigade 16', sub: 'Fire emergency', phone: '16', cat: 'Services', icon: 'flame', tint: '#FEF3C7', col: '#D97706' },
+  { id: 's4', name: 'Edhi Ambulance 115', sub: 'Ambulance service', phone: '115', cat: 'Services', icon: 'plus', tint: '#DCFCE7', col: '#16A34A' },
+  { id: 's5', name: 'Motorway Police 130', sub: 'Highway & motorway help', phone: '130', cat: 'Services', icon: 'siren', tint: '#DBEAFE', col: '#2563EB' }
+];
+var CAMPUS_DEFAULT = [
+  { id: 'c1', name: 'Campus Security', sub: 'Main gate - tap to add the number', phone: '', cat: 'Campus', icon: 'shield', tint: '#EDE9FE', col: '#7C3AED', fixed: true },
+  { id: 'c2', name: 'Medical Centre', sub: 'On-campus first aid - tap to add', phone: '', cat: 'Campus', icon: 'plus', tint: '#DCFCE7', col: '#16A34A', fixed: true }
+];
+function load(k, d) { try { var v = localStorage.getItem('safecall.' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+function save(k, v) { try { localStorage.setItem('safecall.' + k, JSON.stringify(v)); } catch (e) { } }
+var state = { contacts: load('contacts', []), campus: load('campus', CAMPUS_DEFAULT), profile: load('profile', { inc: true }), filter: 'All', pos: null, posErr: null };
+
+// ---------------- helpers ----------------
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function toast(t) { var e = $('toast'); e.textContent = t; e.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(function () { e.classList.remove('on'); }, 2600); }
+function icon(n) { return '<svg class="ic"><use href="#i-' + n + '"/></svg>'; }
+function cleanPhone(p) { return (p || '').replace(/[^\d+]/g, ''); }
+function km(a, b, c, d) { var R = 6371, r = Math.PI / 180, x = Math.sin((c - a) * r / 2), y = Math.sin((d - b) * r / 2); return 2 * R * Math.asin(Math.sqrt(x * x + Math.cos(a * r) * Math.cos(c * r) * y * y)); }
+function onCampus(p) { var b = CAMPUS.box, m = 0.002; return p.lat > b[0] - m && p.lat < b[1] + m && p.lon > b[2] - m && p.lon < b[3] + m; }
+function mapsLink(p) { return 'https://maps.google.com/?q=' + p.lat.toFixed(6) + ',' + p.lon.toFixed(6); }
+function isIOS() { return /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); }
+
+// ---------------- navigation ----------------
+var current = 'splash';
+function go(id) {
+  if (current === 'alert' && sos.active && id !== 'alert') return;
+  document.querySelectorAll('.screen').forEach(function (s) { s.classList.toggle('on', s.id === id); });
+  $('nav').classList.toggle('hide', id === 'splash' || id === 'alert');
+  document.querySelectorAll('nav button').forEach(function (b) { b.classList.toggle('on', b.dataset.go === id); });
+  current = id;
+  if (id === 'contacts') renderContacts();
+  if (id === 'map') renderMap();
+  if (id === 'profile') fillProfile();
+  $(id).scrollTop = 0;
+  if (location.hash.slice(1) !== id && id !== 'splash') history.replaceState(null, '', '#' + id);
+}
+
+// ---------------- location ----------------
+function startGPS() {
+  if (!('geolocation' in navigator)) { state.posErr = 'This browser has no GPS support'; updateLoc(); return; }
+  navigator.geolocation.watchPosition(function (p) {
+    state.pos = { lat: p.coords.latitude, lon: p.coords.longitude, acc: Math.round(p.coords.accuracy), t: new Date() };
+    state.posErr = null; updateLoc();
+  }, function (e) {
+    state.posErr = e.code === 1 ? 'Location permission is off' : 'Could not get a GPS fix';
+    updateLoc();
+  }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 });
+}
+function placeName(p) {
+  if (onCampus(p)) return 'University of Sargodha';
+  var d = km(p.lat, p.lon, CAMPUS.lat, CAMPUS.lon);
+  return d < 30 ? (d < 1 ? Math.round(d * 1000) + ' m' : d.toFixed(1) + ' km') + ' from campus' : p.lat.toFixed(4) + ', ' + p.lon.toFixed(4);
+}
+function updateLoc() {
+  var p = state.pos, on = !!p;
+  ['liveChip', 'liveChip2'].forEach(function (id) { $(id).classList.toggle('off', !on); });
+  $('liveTxt').textContent = on ? 'LIVE' : 'GPS';
+  if (on) {
+    $('locLabel').textContent = onCampus(p) ? 'You are at' : 'You are';
+    $('locName').textContent = placeName(p);
+    $('mapSub').textContent = 'Live location - accurate to ' + p.acc + ' m';
+    $('mapTitle').textContent = onCampus(p) ? 'University of Sargodha' : 'Your location';
+  } else {
+    $('locLabel').textContent = state.posErr ? 'Location' : 'Your location';
+    $('locName').textContent = state.posErr ? 'Tap to turn on location' : 'Finding you...';
+    $('mapSub').textContent = state.posErr || 'Waiting for GPS...';
+  }
+  if (current === 'map') renderMap();
+  if (sos.active) sosUpdate();
+}
+
+// ---------------- map ----------------
+var lastMap = '';
+function renderMap() {
+  var p = state.pos || CAMPUS, d = state.pos ? 0.006 : 0.009;
+  var src = 'https://www.openstreetmap.org/export/embed.html?bbox=' + (p.lon - d) + ',' + (p.lat - d * 0.8) + ',' + (p.lon + d) + ',' + (p.lat + d * 0.8) +
+    '&layer=mapnik&marker=' + p.lat + ',' + p.lon;
+  var key = p.lat.toFixed(4) + p.lon.toFixed(4);
+  if (key !== lastMap) { $('mapFrame').src = src; lastMap = key; }
+  var at = state.pos ? '@' + p.lat + ',' + p.lon + ',15z' : '@' + CAMPUS.lat + ',' + CAMPUS.lon + ',14z';
+  $('hospLink').href = 'https://www.google.com/maps/search/hospital/' + at;
+  $('policeLink').href = 'https://www.google.com/maps/search/police+station/' + at;
+  $('campusLink').href = 'https://www.google.com/maps/dir/?api=1&destination=' + CAMPUS.lat + ',' + CAMPUS.lon + '&travelmode=walking';
+  $('campusDist').textContent = state.pos ? (onCampus(state.pos) ? 'You are on campus now' : placeName(state.pos)) : 'University of Sargodha, Sargodha';
+  if (!state.pos && state.posErr) toast(state.posErr + ' - showing the campus');
+}
+
+// ---------------- contacts ----------------
+function allContacts() { return SERVICES.concat(state.campus, state.contacts); }
+function renderContacts() {
+  var cats = ['All', 'Services', 'Campus', 'Family', 'Friend'];
+  $('chips').innerHTML = cats.map(function (c) { return '<button class="chip' + (c === state.filter ? ' on' : '') + '" onclick="state.filter=\'' + c + '\';renderContacts()">' + c + '</button>'; }).join('');
+  var q = $('q').value.trim().toLowerCase();
+  var items = allContacts().filter(function (c) {
+    return (state.filter === 'All' || c.cat === state.filter) && (!q || (c.name + ' ' + c.phone + ' ' + (c.sub || '')).toLowerCase().indexOf(q) >= 0);
+  });
+  var groups = [['NATIONAL HELPLINES', 'Services'], ['UNIVERSITY OF SARGODHA', 'Campus'], ['MY CONTACTS', 'mine']], html = '';
+  groups.forEach(function (g) {
+    var list = items.filter(function (c) { return g[1] === 'mine' ? (c.cat === 'Family' || c.cat === 'Friend') : c.cat === g[1]; });
+    if (g[1] === 'mine' && (state.filter === 'All' || state.filter === 'Family' || state.filter === 'Friend') && !q) {
+      html += '<div class="sec">' + g[0] + '</div>';
+      if (!list.length) html += '<button class="empty" style="width:calc(100% - 40px)" onclick="openContact()">Add family or friends. They get your SOS message with your live location.<br><b style="color:var(--red)">+ Add contact</b></button>';
+    } else if (list.length) html += '<div class="sec">' + g[0] + '</div>';
+    list.forEach(function (c) {
+      var mine = c.cat === 'Family' || c.cat === 'Friend', ph = cleanPhone(c.phone);
+      var av = mine ? '<span class="bubble" style="background:#FCE7F3;color:#DB2777;font-weight:800">' + esc(c.name.charAt(0).toUpperCase()) + '</span>'
+        : '<span class="bubble" style="background:' + c.tint + ';color:' + c.col + '">' + icon(c.icon) + '</span>';
+      var sub = mine ? c.cat + (c.sos ? ' - gets SOS alerts' : '') + ' - ' + esc(c.phone) : (c.fixed && ph ? esc(c.phone) : esc(c.sub));
+      var callBtn = ph ? '<a class="call" href="tel:' + ph + '" aria-label="Call ' + esc(c.name) + '">' + icon('phone') + '</a>'
+        : '<button class="call need" onclick="openContact(\'' + c.id + '\')">Add no.</button>';
+      var edit = (mine || c.fixed) ? '<button class="more" onclick="openContact(\'' + c.id + '\')" aria-label="Edit">' + icon('dots') + '</button>' : '';
+      html += '<div class="item row">' + av + '<div class="txt"><div class="t14">' + esc(c.name) + '</div><div class="s11">' + sub + '</div></div>' + edit + callBtn + '</div>';
+    });
+  });
+  if (!html) html = '<div class="empty">No contacts match "' + esc(q) + '"</div>';
+  $('list').innerHTML = html;
+}
+var editing = null;
+function findContact(id) { return state.contacts.concat(state.campus).filter(function (c) { return c.id === id; })[0]; }
+function openContact(id) {
+  editing = id ? findContact(id) : null;
+  var fixed = editing && editing.fixed;
+  $('mTitle').textContent = editing ? (fixed ? 'Campus number' : 'Edit contact') : 'Add contact';
+  $('mName').value = editing ? editing.name : ''; $('mName').disabled = !!fixed;
+  $('mPhone').value = editing ? editing.phone : '';
+  $('mCat').value = editing && !fixed ? editing.cat : 'Family';
+  $('mCatWrap').style.display = fixed ? 'none' : '';
+  $('mSosWrap').style.display = fixed ? 'none' : '';
+  $('mSos').checked = editing ? !!editing.sos : true;
+  $('mDel').style.visibility = editing ? 'visible' : 'hidden';
+  $('mDel').textContent = fixed ? 'Clear' : 'Delete';
+  $('modal').classList.add('on');
+  setTimeout(function () { (fixed ? $('mPhone') : $('mName')).focus(); }, 150);
+}
+function closeModal() { $('modal').classList.remove('on'); editing = null; }
+function saveContact() {
+  var name = $('mName').value.trim(), phone = $('mPhone').value.trim();
+  if (!name) return toast('Please enter a name');
+  if (cleanPhone(phone).length < 3) return toast('Please enter a valid phone number');
+  if (editing && editing.fixed) { editing.phone = phone; save('campus', state.campus); }
+  else if (editing) { editing.name = name; editing.phone = phone; editing.cat = $('mCat').value; editing.sos = $('mSos').checked; save('contacts', state.contacts); }
+  else { state.contacts.push({ id: 'u' + Date.now(), name: name, phone: phone, cat: $('mCat').value, sos: $('mSos').checked }); save('contacts', state.contacts); }
+  closeModal(); renderContacts(); toast('Saved');
+}
+function deleteContact() {
+  if (!editing) return;
+  if (editing.fixed) { editing.phone = ''; save('campus', state.campus); }
+  else if (confirm('Delete ' + editing.name + '?')) { state.contacts = state.contacts.filter(function (c) { return c !== editing; }); save('contacts', state.contacts); }
+  else return;
+  closeModal(); renderContacts();
+}
+
+// ---------------- profile ----------------
+function fillProfile() { var p = state.profile; $('pName').value = p.name || ''; $('pDept').value = p.dept || ''; $('pBlood').value = p.blood || ''; $('pMed').value = p.med || ''; $('pInc').checked = p.inc !== false; }
+function saveProfile() {
+  state.profile = { name: $('pName').value.trim(), dept: $('pDept').value.trim(), blood: $('pBlood').value, med: $('pMed').value.trim(), inc: $('pInc').checked };
+  save('profile', state.profile); greet(); toast('Profile saved'); go('home');
+}
+function greet() {
+  var h = new Date().getHours();
+  $('greet').textContent = h < 12 ? 'Good morning,' : h < 17 ? 'Good afternoon,' : 'Good evening,';
+  $('hello').textContent = 'Hello, ' + (state.profile.name ? state.profile.name.split(' ')[0] : 'Student');
+}
+
+// ---------------- messages ----------------
+function sosMessage() {
+  var p = state.pos, pr = state.profile, m = 'EMERGENCY! I need help.';
+  if (pr.name) m = 'EMERGENCY! This is ' + pr.name + '. I need help.';
+  m += p ? ' My live location: ' + mapsLink(p) + (onCampus(p) ? ' (University of Sargodha campus)' : '') : ' I could not get my GPS location - please call me.';
+  if (pr.inc !== false) {
+    if (pr.blood) m += ' Blood group: ' + pr.blood + '.';
+    if (pr.med) m += ' Medical: ' + pr.med + '.';
+  }
+  return m + ' - sent from UoS SafeCall';
+}
+function sosRecipients() { return state.contacts.filter(function (c) { return c.sos && cleanPhone(c.phone); }).map(function (c) { return cleanPhone(c.phone); }); }
+function shareLocation() {
+  if (!state.pos) { toast(state.posErr ? state.posErr + '. Turn on location and try again.' : 'Still finding your location...'); return; }
+  var text = (state.profile.name ? state.profile.name + ' is' : 'I am') + ' sharing a live location from UoS SafeCall: ' + mapsLink(state.pos);
+  if (navigator.share) navigator.share({ title: 'My location', text: text }).catch(function () { });
+  else window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+}
+
+// ---------------- SOS ----------------
+var sos = { active: false, timer: null, left: 5, called: false, texted: false };
+function startSOS() {
+  sos = { active: true, timer: null, left: 5, called: false, texted: false };
+  if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+  go('alert');
+  $('alert').classList.add('counting');
+  $('acBox').style.display = '';
+  $('cancelBtn').style.display = '';
+  sosUpdate();
+  sos.timer = setInterval(function () {
+    sos.left--;
+    if (sos.left <= 0) { clearInterval(sos.timer); sos.timer = null; autoCall(); }
+    sosUpdate();
+  }, 1000);
+}
+function autoCall() {
+  $('alert').classList.remove('counting');
+  $('acBox').style.display = 'none';
+  markCalled();
+  window.location.href = 'tel:1122';
+}
+function markCalled() { sos.called = true; if (sos.timer) { clearInterval(sos.timer); sos.timer = null; } $('alert').classList.remove('counting'); $('acBox').style.display = 'none'; sosUpdate(); }
+function markTexted() {
+  sos.texted = true; setTimeout(sosUpdate, 300);
+}
+function sosUpdate() {
+  var p = state.pos, rec = sosRecipients(), msg = sosMessage(), counting = !!sos.timer;
+  $('cd').textContent = '0:0' + Math.max(sos.left, 0);
+  $('alIcon').innerHTML = counting ? sos.left : '<svg class="ic" style="width:44px;height:44px;stroke-width:3"><use href="#i-check"/></svg>';
+  $('alTitle').textContent = counting ? 'Sending SOS...' : 'SOS Alert Sent';
+  $('alText').textContent = counting ? 'Rescue 1122 will be called when the countdown ends. Tap Cancel if this was a mistake.' : 'Help is on the way. Stay calm, stay where you are and keep your phone with you.';
+  $('stLoc').textContent = p ? (onCampus(p) ? 'University of Sargodha' : p.lat.toFixed(5) + ', ' + p.lon.toFixed(5)) + ' - ' + p.t.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : (state.posErr || 'Getting GPS fix...');
+  $('tkLoc').setAttribute('class', 'ic ' + (p ? 'tick' : 'wait'));
+  $('stCtT').textContent = rec.length ? rec.length + ' contact' + (rec.length > 1 ? 's' : '') + ' ready' : 'No SOS contacts yet';
+  $('stCt').textContent = sos.texted ? 'Message opened - press Send in your SMS app' : rec.length ? 'Tap "Text contacts" to send your location' : 'Add family in Contacts - or use WhatsApp';
+  $('tkCt').setAttribute('class', 'ic ' + (sos.texted ? 'tick' : 'wait'));
+  $('stCall').textContent = sos.called ? 'Call started' : 'Calling when countdown ends';
+  $('tkCall').setAttribute('class', 'ic ' + (sos.called ? 'tick' : 'wait'));
+  $('smsBtn').href = 'sms:' + rec.join(',') + (isIOS() ? '&' : '?') + 'body=' + encodeURIComponent(msg);
+  $('waBtn').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+}
+function endSOS(safe) {
+  if (sos.timer) clearInterval(sos.timer);
+  sos.active = false;
+  toast(safe ? 'Glad you are safe' : 'SOS cancelled');
+  go('home');
+}
+
+// ---------------- start ----------------
+window.addEventListener('hashchange', function () { var h = location.hash.slice(1); if ($(h) && h !== current && h !== 'alert' && h !== 'splash') go(h); });
+greet(); startGPS();
+setTimeout(function () { var h = location.hash.slice(1); go($(h) && h !== 'alert' && h !== 'splash' ? h : 'home'); }, 1500);
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(function () { });
+</script>
+</body>
+</html>

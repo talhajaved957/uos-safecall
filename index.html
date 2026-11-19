@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UoS SafeCall - Campus emergency help</title>
+<meta name="description" content="UoS SafeCall connects University of Sargodha students to Rescue 1122, Police, Campus Security and family in one tap.">
+<meta name="theme-color" content="#E53935">
+<meta property="og:title" content="UoS SafeCall">
+<meta property="og:description" content="Campus emergency help, one tap away. A UI/UX project at the University of Sargodha.">
+<meta property="og:image" content="poster.jpg">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--red:#E53935;--ink:#151826;--sub:#5F6675;--line:#E7E9F0;--bg:#F6F6FA;--green:#16A34A;--blue:#2563EB;--purple:#7C3AED}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}
+a{color:inherit}
+img{max-width:100%;height:auto;display:block}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+header.top{position:sticky;top:0;z-index:10;background:rgba(246,246,250,.85);backdrop-filter:blur(10px);border-bottom:1px solid rgba(21,24,38,.06)}
+header.top .wrap{display:flex;align-items:center;gap:12px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;text-decoration:none;font-size:17px}
+.brand img{width:34px;height:34px;border-radius:10px}
+header nav{margin-left:auto;display:flex;gap:22px;font-size:14px;font-weight:600}
+header nav a{text-decoration:none;color:var(--sub)}header nav a:hover{color:var(--red)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:50px;padding:0 24px;border-radius:14px;font-weight:800;font-size:15px;text-decoration:none;transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.white{background:#fff;color:var(--red);box-shadow:0 10px 24px rgba(90,11,14,.25)}
+.btn.ghost{border:1.5px solid rgba(255,255,255,.55);color:#fff}
+.btn.red{background:linear-gradient(180deg,#F0443A,#B3161B);color:#fff;box-shadow:0 10px 24px rgba(229,57,53,.3)}
+.btn.small{height:40px;padding:0 16px;font-size:13px;border-radius:12px}
+.hero{background:linear-gradient(160deg,#F0443A,#A3141A);color:#fff;position:relative;overflow:hidden;padding:72px 0 110px}
+.hero::before{content:"";position:absolute;width:640px;height:640px;border-radius:50%;background:rgba(255,255,255,.07);left:-220px;top:-260px}
+.hero::after{content:"";position:absolute;width:420px;height:420px;border-radius:50%;background:rgba(255,255,255,.06);right:-120px;bottom:-160px}
+.hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);border-radius:20px;padding:7px 14px;font-size:13px;font-weight:700}
+.hero h1{font-size:clamp(42px,7vw,76px);line-height:1.02;margin:18px 0 12px;letter-spacing:-.02em;font-weight:800}
+.hero p.lead{font-size:clamp(17px,2.2vw,21px);opacity:.9;margin:0 0 30px;max-width:560px}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.phone{width:280px;margin:0 auto;background:#11131C;border-radius:44px;padding:10px;box-shadow:0 40px 80px rgba(40,5,8,.45);transform:rotate(3deg)}
+.phone img{border-radius:34px}
+section{padding:84px 0}
+.eyebrow{color:var(--red);font-weight:800;font-size:13px;letter-spacing:.18em}
+h2{font-size:clamp(30px,4vw,42px);line-height:1.15;margin:8px 0 14px;letter-spacing:-.01em}
+.intro{color:var(--sub);font-size:17px;max-width:680px;margin:0}
+.features{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:40px}
+.card{background:#fff;border-radius:22px;padding:26px;box-shadow:0 10px 30px rgba(21,24,38,.07)}
+.bub{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;margin-bottom:18px}
+.bub .ic{width:26px;height:26px}
+.card h3{margin:0 0 6px;font-size:19px}.card p{margin:0;color:var(--sub);font-size:14.5px}
+.screens{display:grid;grid-template-columns:repeat(5,1fr);gap:22px;margin-top:44px}
+.screens figure{margin:0;text-align:center}
+.screens .frame{background:#11131C;border-radius:30px;padding:7px;box-shadow:0 18px 40px rgba(21,24,38,.18)}
+.screens img{border-radius:24px}
+.screens figcaption{margin-top:16px}
+.screens b{display:block;color:var(--red);font-size:13px;letter-spacing:.1em}
+.screens span{display:block;font-weight:800;font-size:17px}
+.screens small{color:var(--sub);font-size:13px}
+.how{background:#fff}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:40px;counter-reset:s}
+.step{border:1px solid var(--line);border-radius:22px;padding:24px;position:relative}
+.step::before{counter-increment:s;content:counter(s);width:38px;height:38px;border-radius:50%;background:#FDECEC;color:var(--red);font-weight:800;display:grid;place-items:center;margin-bottom:14px}
+.step h3{margin:0 0 6px;font-size:17px}.step p{margin:0;color:var(--sub);font-size:14px}
+.nums{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:36px}
+.num{background:#fff;border-radius:18px;padding:18px;text-align:center;text-decoration:none;box-shadow:0 6px 18px rgba(21,24,38,.06);transition:transform .15s}
+.num:hover{transform:translateY(-3px)}
+.num strong{display:block;font-size:30px;font-weight:800;color:var(--red)}.num span{font-size:13px;color:var(--sub);font-weight:600}
+.try{background:linear-gradient(160deg,#1E2133,#121420);color:#fff;border-radius:32px;padding:48px;display:grid;grid-template-columns:1fr auto auto;gap:36px;align-items:center}
+.try h2{color:#fff;margin-top:0}.try p{color:rgba(255,255,255,.72);margin:0 0 24px}
+.qr{background:#fff;border-radius:20px;padding:14px;text-align:center;color:var(--ink);width:190px}
+.qr img{width:162px;height:162px;margin:0 auto 8px;image-rendering:pixelated}
+.qr b{font-size:13px}
+.about{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.poster{border-radius:20px;box-shadow:0 24px 60px rgba(21,24,38,.18)}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}
+.tags span{background:#fff;border:1px solid var(--line);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600}
+footer{padding:40px 0 50px;color:var(--sub);font-size:13.5px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;border-top:1px solid var(--line);padding-top:28px}
+.warn{background:#FFF7ED;color:#9A3412;border-radius:16px;padding:14px 18px;font-size:14px;margin-top:28px}
+@media (max-width:900px){
+  .hero .wrap,.about{grid-template-columns:1fr}
+  .phone{width:230px;transform:none}
+  .features,.steps{grid-template-columns:1fr 1fr}
+  .screens{grid-template-columns:repeat(5,72%);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px}
+  .screens figure{scroll-snap-align:center}
+  .nums{grid-template-columns:repeat(3,1fr)}
+  .try{grid-template-columns:1fr;padding:32px 24px}
+  .qrs{display:flex;gap:16px;flex-wrap:wrap}
+  header nav{display:none}
+}
+@media (max-width:520px){.features,.steps{grid-template-columns:1fr}.nums{grid-template-columns:1fr 1fr}section{padding:60px 0}.hero{padding:48px 0 80px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="i-figma" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="3"/><path d="M9 7h6M9 11h6M9 15h3"/></symbol>
+</svg>
+
+<header class="top"><div class="wrap">
+  <a class="brand" href="#"><img src="icon-192.png" alt="">UoS SafeCall</a>
+  <nav><a href="#features">Features</a><a href="#screens">Screens</a><a href="#how">How it works</a><a href="#about">About</a></nav>
+  <a class="btn red small" href="app.html">Open app</a>
+</div></header>
+
+<div class="hero"><div class="wrap">
+  <div>
+    <span class="pill"><svg class="ic" style="width:16px;height:16px"><use href="#i-pin"/></svg>University of Sargodha</span>
+    <h1>UoS SafeCall</h1>
+    <p class="lead">Campus emergency help, one tap away. One button connects students to Rescue 1122, Police, Campus Security and family, and shares their live location.</p>
+    <div class="cta">
+      <a class="btn white" href="app.html"><svg class="ic"><use href="#i-phone"/></svg>Open the live app</a>
+      <a class="btn ghost" id="figmaBtn" href="#" target="_blank" rel="noopener"><svg class="ic"><use href="#i-figma"/></svg>Figma prototype</a>
+    </div>
+  </div>
+  <div class="phone"><img src="screen-2-home.jpg" alt="UoS SafeCall home screen with the SOS button" width="720" height="1560"></div>
+</div></div>
+
+<section id="features"><div class="wrap">
+  <div class="eyebrow">WHY SAFECALL</div>
+  <h2>Built for students, by students</h2>
+  <p class="intro">In an emergency, nobody wants to search for numbers or explain where they are. SafeCall does both in seconds.</p>
+  <div class="features">
+    <div class="card"><div class="bub" style="background:#FEE2E2;color:var(--red)"><svg class="ic"><use href="#i-phone"/></svg></div><h3>One-tap SOS</h3><p>A 5-second countdown, then Rescue 1122 is called automatically.</p></div>
+    <div class="card"><div class="bub" style="background:#DBEAFE;color:var(--blue)"><svg class="ic"><use href="#i-pin"/></svg></div><h3>Live campus location</h3><p>Real GPS, the campus map and the nearest hospitals and police.</p></div>
+    <div class="card"><div class="bub" style="background:#EDE9FE;color:var(--purple)"><svg class="ic"><use href="#i-shield"/></svg></div><h3>Verified numbers</h3><p>Rescue 1122, Police 15, Fire 16, Edhi 115 and campus contacts.</p></div>
+    <div class="card"><div class="bub" style="background:#DCFCE7;color:var(--green)"><svg class="ic"><use href="#i-users"/></svg></div><h3>Trusted contacts</h3><p>Family gets an SMS or WhatsApp with your live map link.</p></div>
+  </div>
+</div></section>
+
+<section id="screens" style="padding-top:20px"><div class="wrap">
+  <div class="eyebrow">THE APP</div>
+  <h2>Five screens, one simple flow</h2>
+  <p class="intro">Designed in Figma, then built as a real web app that installs on any phone.</p>
+  <div class="screens">
+    <figure><div class="frame"><img src="screen-1-splash.jpg" alt="Splash screen" loading="lazy" width="720" height="1560"></div><figcaption><b>01</b><span>Splash</span><small>Our brand while it loads</small></figcaption></figure>
+    <figure><div class="frame"><img src="screen-2-home.jpg" alt="Home screen" loading="lazy" width="720" height="1560"></div><figcaption><b>02</b><span>Home</span><small>One-tap SOS button</small></figcaption></figure>
+    <figure><div class="frame"><img src="screen-3-contacts.jpg" alt="Emergency contacts screen" loading="lazy" width="720" height="1560"></div><figcaption><b>03</b><span>Contacts</span><small>Verified helplines</small></figcaption></figure>
+    <figure><div class="frame"><img src="screen-4-map.jpg" alt="Campus map screen" loading="lazy" width="720" height="1560"></div><figcaption><b>04</b><span>Campus Map</span><small>Nearest help</small></figcaption></figure>
+    <figure><div class="frame"><img src="screen-5-alert.jpg" alt="Alert sent screen" loading="lazy" width="720" height="1560"></div><figcaption><b>05</b><span>Alert Sent</span><small>Live status &amp; auto-call</small></figcaption></figure>
+  </div>
+</div></section>
+
+<section id="how" class="how"><div class="wrap">
+  <div class="eyebrow">HOW IT WORKS</div>
+  <h2>Help in four steps</h2>
+  <div class="steps">
+    <div class="step"><h3>Press SOS</h3><p>One big button on the home screen. No menus, no typing.</p></div>
+    <div class="step"><h3>Location is found</h3><p>The phone's GPS finds you and checks if you are on campus.</p></div>
+    <div class="step"><h3>Contacts are alerted</h3><p>An SMS or WhatsApp with your map link is ready to send.</p></div>
+    <div class="step"><h3>1122 is called</h3><p>After 5 seconds Rescue 1122 is dialled, unless you cancel.</p></div>
+  </div>
+  <div class="nums">
+    <a class="num" href="tel:1122"><strong>1122</strong><span>Rescue</span></a>
+    <a class="num" href="tel:15"><strong>15</strong><span>Police</span></a>
+    <a class="num" href="tel:16"><strong>16</strong><span>Fire Brigade</span></a>
+    <a class="num" href="tel:115"><strong>115</strong><span>Edhi Ambulance</span></a>
+    <a class="num" href="tel:130"><strong>130</strong><span>Motorway Police</span></a>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="try">
+    <div><h2>Try it on your phone</h2><p>Scan to open the live app, or the interactive Figma prototype. On the app, choose "Add to Home screen" to install it.</p>
+      <a class="btn red" href="app.html">Open the live app</a></div>
+    <div class="qr"><img src="qr-app.png" alt="QR code for the live app"><b>Live app</b></div>
+    <div class="qr"><img src="qr-figma.png" alt="QR code for the Figma prototype"><b>Figma prototype</b></div>
+  </div>
+</div></section>
+
+<section id="about" style="padding-top:0"><div class="wrap about">
+  <div>
+    <div class="eyebrow">ABOUT THE PROJECT</div>
+    <h2>A UI/UX project at the University of Sargodha</h2>
+    <p class="intro">UoS SafeCall was designed in Figma and built as a working web app for our UI/UX Design exhibition. It shows how good design can make emergency help faster and simpler.</p>
+    <div class="tags"><span>Figma</span><span>Prototype</span><span>Web app (PWA)</span><span>GPS</span><span>OpenStreetMap</span></div>
+    <p><b>Designed by Urwa Maryam &amp; group</b><br><span style="color:var(--sub)">University of Sargodha</span></p>
+    <div class="warn"><b>Student project.</b> In a real emergency, always call 1122 directly if the app does not work. Your saved contacts and profile stay only on your own phone.</div>
+  </div>
+  <img class="poster" src="poster.jpg" alt="UoS SafeCall exhibition poster" loading="lazy" width="1191" height="1684">
+</div></section>
+
+<footer><div class="wrap"><span>&copy; 2026 UoS SafeCall - University of Sargodha UI/UX project</span><span><a href="app.html">Open app</a> &middot; <a href="#" id="figmaFoot" target="_blank" rel="noopener">Figma prototype</a></span></div></footer>
+<script>
+var FIGMA = 'https://www.figma.com/proto/uasB5fXJMMcS6ubk2ZSvzR/UoS-SafeCall?node-id=2-2&starting-point-node-id=2%3A2&scaling=scale-down';
+document.getElementById('figmaBtn').href = FIGMA; document.getElementById('figmaFoot').href = FIGMA;
+</script>
+</body>
+</html>
