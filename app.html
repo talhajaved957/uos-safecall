@@ -134,6 +134,24 @@ nav.hide{display:none}
 .modal h3{margin:4px 20px 14px;font-size:18px;font-weight:800}
 .toast{position:absolute;left:50%;bottom:calc(96px + var(--safe-b));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:13px;font-weight:600;z-index:30;opacity:0;pointer-events:none;transition:.25s;max-width:90%;text-align:center}
 .toast.on{opacity:1}
+/* interactive text */
+.type::after{content:"|";margin-left:2px;animation:blink 1s infinite}
+.type.done::after{content:""}
+.tip{margin:14px 20px 0;padding:14px 16px;border-radius:16px;background:#fff;box-shadow:var(--soft);display:flex;gap:12px;align-items:flex-start;width:calc(100% - 40px);text-align:left}
+.tip .bubble{width:34px;height:34px;background:#FEF3C7;color:var(--amber)}
+.tip small{display:block;font-size:10.5px;font-weight:800;letter-spacing:.1em;color:var(--amber)}
+.tip p{margin:2px 0 0;font-size:13px;font-weight:600;line-height:18px;transition:opacity .3s}
+.tip p.fade{opacity:0}
+.tipdots{display:flex;gap:4px;margin-top:8px}.tipdots i{width:6px;height:6px;border-radius:3px;background:var(--line);transition:.3s}.tipdots i.on{width:16px;background:var(--amber)}
+.dotdot::after{content:"";animation:dots 1.2s steps(4) infinite}
+@keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+.pop{animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+.al-msg{text-align:center;font-size:14px;font-weight:700;color:var(--red);margin:10px 30px 0;min-height:20px;transition:opacity .3s}
+#alert:not(.counting) .al-msg{color:var(--green)}
+.status .row{transition:background .4s}
+.status .row.lit{background:linear-gradient(90deg,rgba(22,163,74,.06),transparent)}
+.hint{font-size:11px;color:var(--mute);text-align:center;margin-top:6px;font-weight:600}
 </style>
 </head>
 <body>
@@ -164,7 +182,7 @@ nav.hide{display:none}
 <section id="splash" class="screen on nonav">
   <div class="logo"><svg width="72" height="72" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="#E53935"/><path d="M12 7.5v8M8 11.5h8" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg></div>
   <h1>UoS SafeCall</h1>
-  <p>Help is one tap away</p>
+  <p class="type" id="tagline" data-text="Help is one tap away"></p>
   <div class="dots"><i></i><i></i><i></i></div>
   <div class="splash-foot">University of Sargodha<small>CAMPUS EMERGENCY NETWORK</small></div>
 </section>
@@ -182,10 +200,11 @@ nav.hide{display:none}
     <span style="min-width:0"><span class="s11" id="locLabel">Your location</span><br><span class="t14" id="locName">Finding you...</span></span>
     <span class="live off" id="liveChip"><i></i><span id="liveTxt">GPS</span></span>
   </button>
-  <div class="ask"><h3>Are you in an emergency?</h3><p>Press SOS. Your live location goes to your contacts and Rescue 1122 is called.</p></div>
-  <div class="sos-wrap"><div class="sos-ring"><button id="sosBtn" onclick="startSOS()" aria-label="Send SOS"><b>SOS</b><span>Tap for help</span></button></div></div>
+  <div class="ask"><h3 id="askTitle">Are you in an emergency?</h3><p>Press SOS. Your live location goes to your contacts and Rescue 1122 is called.</p></div>
+  <div class="sos-wrap"><div class="sos-ring"><button id="sosBtn" onclick="startSOS()" aria-label="Send SOS"><b>SOS</b><span id="sosSub">Tap for help</span></button></div></div>
+  <div class="hint">You get 5 seconds to cancel</div>
   <div class="head"><b>Quick call</b><button onclick="go('contacts')">See all</button></div>
-  <div class="tiles">
+  <div class="tiles" onclick="var t=event.target.closest('.tile'); if(t) toast('Calling ' + t.querySelector('b').textContent + ' (' + t.querySelector('small').textContent + ')...')">
     <a class="tile card" href="tel:1122"><span class="bubble" style="background:#FEE2E2;color:var(--red)"><svg class="ic"><use href="#i-pulse"/></svg></span><b>Rescue</b><small>1122</small></a>
     <a class="tile card" href="tel:15"><span class="bubble" style="background:#DBEAFE;color:var(--blue)"><svg class="ic"><use href="#i-siren"/></svg></span><b>Police</b><small>15</small></a>
     <a class="tile card" href="tel:16"><span class="bubble" style="background:#FEF3C7;color:var(--amber)"><svg class="ic"><use href="#i-flame"/></svg></span><b>Fire</b><small>16</small></a>
@@ -195,6 +214,10 @@ nav.hide{display:none}
     <span class="bubble" style="background:#fff;color:var(--blue);width:36px;height:36px"><svg class="ic"><use href="#i-send"/></svg></span>
     <span style="flex:1"><b style="font-size:13px">Safe Walk</b><br><span class="s11">Send your live location to a friend</span></span>
     <svg class="ic" style="color:var(--blue)"><use href="#i-chev"/></svg>
+  </button>
+  <button class="tip" onclick="nextTip()" aria-label="Next safety tip">
+    <span class="bubble"><svg class="ic"><use href="#i-shield"/></svg></span>
+    <span style="flex:1"><small>SAFETY TIP</small><p id="tipText"></p><span class="tipdots" id="tipDots"></span></span>
   </button>
 </section>
 
@@ -250,6 +273,7 @@ nav.hide{display:none}
   <div class="okc"><div><span id="alIcon">5</span></div></div>
   <div class="al-t" id="alTitle">Sending SOS...</div>
   <div class="al-p" id="alText">Rescue 1122 will be called when the countdown ends. Tap Cancel if this was a mistake.</div>
+  <div class="al-msg" id="alMsg"></div>
   <div class="card status">
     <div class="row"><span class="bubble" style="background:#DCFCE7;color:var(--green);width:36px;height:36px"><svg class="ic"><use href="#i-pin"/></svg></span>
       <div style="flex:1;min-width:0"><div class="t14">Location</div><div class="s11" id="stLoc">Getting GPS fix...</div></div><svg class="ic wait" id="tkLoc"><use href="#i-check"/></svg></div>
@@ -368,13 +392,15 @@ function updateLoc() {
   ['liveChip', 'liveChip2'].forEach(function (id) { $(id).classList.toggle('off', !on); });
   $('liveTxt').textContent = on ? 'LIVE' : 'GPS';
   if (on) {
-    $('locLabel').textContent = onCampus(p) ? 'You are at' : 'You are';
+    $('locLabel').textContent = onCampus(p) ? 'You are on campus - help is close' : 'You are';
     $('locName').textContent = placeName(p);
+    $('locName').classList.remove('dotdot');
     $('mapSub').textContent = 'Live location - accurate to ' + p.acc + ' m';
     $('mapTitle').textContent = onCampus(p) ? 'University of Sargodha' : 'Your location';
   } else {
     $('locLabel').textContent = state.posErr ? 'Location' : 'Your location';
-    $('locName').textContent = state.posErr ? 'Tap to turn on location' : 'Finding you...';
+    $('locName').textContent = state.posErr ? 'Tap to turn on location' : 'Finding you';
+    $('locName').classList.toggle('dotdot', !state.posErr);
     $('mapSub').textContent = state.posErr || 'Waiting for GPS...';
   }
   if (current === 'map') renderMap();
@@ -466,12 +492,13 @@ function deleteContact() {
 function fillProfile() { var p = state.profile; $('pName').value = p.name || ''; $('pDept').value = p.dept || ''; $('pBlood').value = p.blood || ''; $('pMed').value = p.med || ''; $('pInc').checked = p.inc !== false; }
 function saveProfile() {
   state.profile = { name: $('pName').value.trim(), dept: $('pDept').value.trim(), blood: $('pBlood').value, med: $('pMed').value.trim(), inc: $('pInc').checked };
-  save('profile', state.profile); greet(); toast('Profile saved'); go('home');
+  save('profile', state.profile); greet(); toast(state.profile.name ? 'Welcome, ' + state.profile.name.split(' ')[0] + '! Profile saved.' : 'Profile saved'); go('home');
 }
 function greet() {
   var h = new Date().getHours();
   $('greet').textContent = h < 12 ? 'Good morning,' : h < 17 ? 'Good afternoon,' : 'Good evening,';
   $('hello').textContent = 'Hello, ' + (state.profile.name ? state.profile.name.split(' ')[0] : 'Student');
+  $('askTitle').textContent = state.profile.name ? 'Need help, ' + state.profile.name.split(' ')[0] + '?' : 'Are you in an emergency?';
 }
 
 // ---------------- messages ----------------
@@ -496,7 +523,9 @@ function shareLocation() {
 // ---------------- SOS ----------------
 var sos = { active: false, timer: null, left: 5, called: false, texted: false };
 function startSOS() {
-  sos = { active: true, timer: null, left: 5, called: false, texted: false };
+  if (sos.calmTimer) clearInterval(sos.calmTimer);
+  sos = { active: true, timer: null, left: 5, called: false, texted: false, calm: 0 };
+  sos.calmTimer = setInterval(function () { if (!sos.timer && sos.active) { sos.calm = (sos.calm + 1) % CALM.length; sosUpdate(); } }, 4000);
   if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
   go('alert');
   $('alert').classList.add('counting');
@@ -519,31 +548,67 @@ function markCalled() { sos.called = true; if (sos.timer) { clearInterval(sos.ti
 function markTexted() {
   sos.texted = true; setTimeout(sosUpdate, 300);
 }
+var CALM = ['Breathe slowly. Help is coming.', 'Stay where you are if it is safe.', 'Keep your phone with you and charged.', 'Unlock the door if help needs to reach you.', 'Stay on the line when 1122 answers.'];
+function firstName() { return state.profile.name ? state.profile.name.split(' ')[0] : ''; }
+function countdownMsg(left) {
+  var n = firstName();
+  return ['Calling now...', 'Connecting to Rescue 1122...', 'Stay calm' + (n ? ', ' + n : '') + '. You are not alone.', 'Preparing your SOS message...', 'Getting your live location...', 'Getting your live location...'][Math.max(0, Math.min(5, left))];
+}
+function setMsg(t) {
+  var e = $('alMsg'); if (e.textContent === t) return;
+  e.style.opacity = 0; setTimeout(function () { e.textContent = t; e.style.opacity = 1; }, 200);
+}
 function sosUpdate() {
   var p = state.pos, rec = sosRecipients(), msg = sosMessage(), counting = !!sos.timer;
+  setMsg(counting ? countdownMsg(sos.left) : CALM[sos.calm || 0]);
   $('cd').textContent = '0:0' + Math.max(sos.left, 0);
   $('alIcon').innerHTML = counting ? sos.left : '<svg class="ic" style="width:44px;height:44px;stroke-width:3"><use href="#i-check"/></svg>';
   $('alTitle').textContent = counting ? 'Sending SOS...' : 'SOS Alert Sent';
   $('alText').textContent = counting ? 'Rescue 1122 will be called when the countdown ends. Tap Cancel if this was a mistake.' : 'Help is on the way. Stay calm, stay where you are and keep your phone with you.';
   $('stLoc').textContent = p ? (onCampus(p) ? 'University of Sargodha' : p.lat.toFixed(5) + ', ' + p.lon.toFixed(5)) + ' - ' + p.t.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : (state.posErr || 'Getting GPS fix...');
-  $('tkLoc').setAttribute('class', 'ic ' + (p ? 'tick' : 'wait'));
   $('stCtT').textContent = rec.length ? rec.length + ' contact' + (rec.length > 1 ? 's' : '') + ' ready' : 'No SOS contacts yet';
   $('stCt').textContent = sos.texted ? 'Message opened - press Send in your SMS app' : rec.length ? 'Tap "Text contacts" to send your location' : 'Add family in Contacts - or use WhatsApp';
-  $('tkCt').setAttribute('class', 'ic ' + (sos.texted ? 'tick' : 'wait'));
   $('stCall').textContent = sos.called ? 'Call started' : 'Calling when countdown ends';
-  $('tkCall').setAttribute('class', 'ic ' + (sos.called ? 'tick' : 'wait'));
   $('smsBtn').href = 'sms:' + rec.join(',') + (isIOS() ? '&' : '?') + 'body=' + encodeURIComponent(msg);
   $('waBtn').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+  tick('tkLoc', !!p); tick('tkCt', sos.texted); tick('tkCall', sos.called);
+}
+function tick(id, on) {
+  var el = $(id), row = el.closest('.row'), was = row.classList.contains('lit');
+  el.classList.toggle('tick', on); el.classList.toggle('wait', !on); row.classList.toggle('lit', on);
+  if (on && !was) { el.classList.remove('pop'); void el.getBoundingClientRect(); el.classList.add('pop'); }
 }
 function endSOS(safe) {
   if (sos.timer) clearInterval(sos.timer);
+  if (sos.calmTimer) clearInterval(sos.calmTimer);
   sos.active = false;
-  toast(safe ? 'Glad you are safe' : 'SOS cancelled');
+  toast(safe ? 'Glad you are safe' + (firstName() ? ', ' + firstName() : '') + '!' : 'SOS cancelled. No call was made.');
   go('home');
 }
 
 // ---------------- start ----------------
 window.addEventListener('hashchange', function () { var h = location.hash.slice(1); if ($(h) && h !== current && h !== 'alert' && h !== 'splash') go(h); });
+// typewriter tagline on the splash
+(function () { var e = $('tagline'), t = e.dataset.text, i = 0;
+  var k = setInterval(function () { e.textContent = t.slice(0, ++i); if (i >= t.length) { clearInterval(k); e.classList.add('done'); } }, 55); })();
+// rotating safety tips
+var TIPS = ['Save a family number in Contacts so SOS can text them your location.',
+  'Add the Campus Security number once. It could save minutes later.',
+  'Walking back late? Use Safe Walk to share your live location.',
+  'Rescue 1122 is free to call, even without balance.',
+  'Fill in your blood group in Profile. Doctors will see it in your SOS.',
+  'Pressed SOS by mistake? You always get 5 seconds to cancel.'];
+var tipI = 0, tipTimer;
+function showTip() {
+  var e = $('tipText'); e.classList.add('fade');
+  setTimeout(function () { e.textContent = TIPS[tipI]; e.classList.remove('fade'); }, 250);
+  $('tipDots').innerHTML = TIPS.map(function (_, i) { return '<i' + (i === tipI ? ' class="on"' : '') + '></i>'; }).join('');
+}
+function nextTip() { tipI = (tipI + 1) % TIPS.length; showTip(); clearInterval(tipTimer); tipTimer = setInterval(nextTip, 6000); }
+showTip(); tipTimer = setInterval(nextTip, 6000);
+// SOS button and title text that gently changes
+var SUBS = ['Tap for help', 'Help in 5 sec', 'Tap for help', 'We are here'], subI = 0;
+setInterval(function () { subI = (subI + 1) % SUBS.length; $('sosSub').textContent = SUBS[subI]; }, 2500);
 greet(); startGPS();
 setTimeout(function () { var h = location.hash.slice(1); go($(h) && h !== 'alert' && h !== 'splash' ? h : 'home'); }, 1500);
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(function () { });
