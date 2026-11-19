@@ -5,7 +5,7 @@ This is a UI/UX Design project. It was designed in Figma and then built as a wor
 
 - **Website:** https://talhajaved957.github.io/uos-safecall/
 - **Live app:** https://talhajaved957.github.io/uos-safecall/app.html
-- **Figma prototype:** https://www.figma.com/proto/uasB5fXJMMcS6ubk2ZSvzR/UoS-SafeCall?node-id=2-2&starting-point-node-id=2%3A2&scaling=scale-down
+- **Figma prototype:** https://www.figma.com/proto/uasB5fXJMMcS6ubk2ZSvzR
 
 ## What the app does
 - One-tap **SOS**: a 5-second countdown, then Rescue 1122 is called
